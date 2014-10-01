@@ -1,10 +1,9 @@
 package model;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
 
 @Entity
-public class AssistantTeacher extends RoleSchool implements Serializable {
+public class AssistantTeacher extends RoleSchool{
     private static final long serialVersionUID = 1L;
 
     public AssistantTeacher() {

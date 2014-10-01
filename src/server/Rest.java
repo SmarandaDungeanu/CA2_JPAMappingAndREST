@@ -6,6 +6,8 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -21,9 +23,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import model.Person;
-
+import model.RoleSchool;
+import org.eclipse.persistence.sessions.serializers.JSONSerializer;
 
 public class Rest {
+
     static int port = 8090;
     static String ip = "127.0.0.1";
     static String publicFolder = "src/htmlFiles/";
@@ -34,7 +38,7 @@ public class Rest {
         HttpServer server = HttpServer.create(new InetSocketAddress(ip, port), 0);
         //REST Routes
         server.createContext("/Person", new HandlerPerson());
-    //    server.createContext("/Role", new HandlerRole());
+        server.createContext("/Role", new HandlerRole());
         //HTTP Server Routes
         server.createContext(filesUri, new HandlerFileServer());
 
@@ -50,8 +54,8 @@ public class Rest {
         }
         new Rest().run();
     }
-   // class HandlerRole
-    class HandlerPerson implements HttpHandler {
+
+    class HandlerRole implements HttpHandler {
 
         PersonFacade facade = new PersonFacade();
 
@@ -59,37 +63,16 @@ public class Rest {
         public void handle(HttpExchange he) throws IOException {
             String response = "";
             int status = 200;
-            String method = he.getRequestMethod().toUpperCase();
-            switch (method) {
-                case "GET":
-                    try {
-                        String path = he.getRequestURI().getPath();
-                        if (path.lastIndexOf("/") > 0) { //person/id
-                            int id = Integer.parseInt(path.substring(path.lastIndexOf("/") + 1));
-                            response = facade.getPersonAsJSON(id);
-                        } else { //person
-                            response = facade.getPersonsAsJSON();
-                            System.out.println(response);
-                        }
-                    } catch (NumberFormatException nfe) {
-                        response = "Id is not a number.";
-                        status = 404;
-                    } catch (NotFoundException ex) {
-                        response = "No person found for this id.";
-                        status = 404;
-                    }
-                    break;
-                case "POST":
-                    InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
-                    BufferedReader br = new BufferedReader(isr);
-                    String jsonQuery = br.readLine();
-                    Person p = facade.addPersonFromGson(jsonQuery);
-                    response = new Gson().toJson(p);
-                    break;
-                case "PUT":
-                    break;
-                case "DELETE":
-                    break;
+            String path = he.getRequestURI().getPath();
+            if (path.lastIndexOf("/") > 0) { //Role/id
+                int id = Integer.parseInt(path.substring(path.lastIndexOf("/") + 1));
+                InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
+                BufferedReader br = new BufferedReader(isr);
+                String jsonQuery = br.readLine();
+                RoleSchool r = facade.addRoleSchoolFromGson(jsonQuery, id);
+                response = new Gson().toJson(r);
+            } else {
+                response = "Provide a person id";
             }
             he.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             he.getResponseHeaders().add("Content-Type", "application/json");
@@ -99,64 +82,111 @@ public class Rest {
             }
         }
     }
+        class HandlerPerson implements HttpHandler {
 
-    class HandlerFileServer implements HttpHandler {
+            PersonFacade facade = new PersonFacade();
 
-        @Override
-        public void handle(HttpExchange he) throws IOException {
-            int responseCode = 500;
-            //Set initial error values if an un expected problem occurs
-            String errorMsg = null;
-            byte[] bytesToSend = "<h1>Internal Error </h1><p>We are sorry. The server encountered an unexpected problem</p>".getBytes();
-            String mime = null;
-
-            String requestedFile = he.getRequestURI().toString();
-            String f = requestedFile.substring(requestedFile.lastIndexOf("/") + 1);
-            try {
-                String extension = f.substring(f.lastIndexOf("."));
-                mime = getMime(extension);
-                File file = new File(publicFolder + f);
-                System.out.println(publicFolder + f);
-                bytesToSend = new byte[(int) file.length()];
-                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-                bis.read(bytesToSend, 0, bytesToSend.length);
-                responseCode = 200;
-            } catch (Exception e) {
-                responseCode = 404;
-                errorMsg = "<h1>404 Not Found</h1>No context found for request";
-            }
-            if (responseCode == 200) {
-                Headers h = he.getResponseHeaders();
-                h.set("Content-Type", mime);
-            } else {
-                bytesToSend = errorMsg.getBytes();
-            }
-            he.sendResponseHeaders(responseCode, bytesToSend.length);
-            try (OutputStream os = he.getResponseBody()) {
-                os.write(bytesToSend, 0, bytesToSend.length);
+            @Override
+            public void handle(HttpExchange he) throws IOException {
+                String response = "";
+                int status = 200;
+                String method = he.getRequestMethod().toUpperCase();
+                switch (method) {
+                    case "GET":
+                        try {
+                            String path = he.getRequestURI().getPath();
+                            if (path.lastIndexOf("/") > 0) { //person/id
+                                int id = Integer.parseInt(path.substring(path.lastIndexOf("/") + 1));
+                                response = facade.getPersonAsJSON(id);
+                            } else { //person
+                                response = facade.getPersonsAsJSON();
+                            }
+                        } catch (NumberFormatException nfe) {
+                            response = "Id is not a number.";
+                            status = 404;
+                        } catch (NotFoundException ex) {
+                            response = "No person found for this id.";
+                            status = 404;
+                        }
+                        break;
+                    case "POST":
+                        InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
+                        BufferedReader br = new BufferedReader(isr);
+                        String jsonQuery = br.readLine();
+                        Person p = facade.addPersonFromGson(jsonQuery);
+                        response = new Gson().toJson(p);
+                        break;
+                    case "PUT":
+                        break;
+                    case "DELETE":
+                        break;
+                }
+                he.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+                he.getResponseHeaders().add("Content-Type", "application/json");
+                he.sendResponseHeaders(status, 0);
+                try (OutputStream os = he.getResponseBody()) {
+                    os.write(response.getBytes());
+                }
             }
         }
 
-        private String getMime(String extension) {
-            String mime = "";
-            switch (extension) {
-                case ".pdf":
-                    mime = "application/pdf";
-                    break;
-                case ".png":
-                    mime = "image/png";
-                    break;
-                case ".js":
-                    mime = "text/javascript";
-                    break;
-                case ".html":
-                    mime = "text/html";
-                    break;
-                case ".jar":
-                    mime = "application/java-archive";
-                    break;
+        class HandlerFileServer implements HttpHandler {
+
+            @Override
+            public void handle(HttpExchange he) throws IOException {
+                int responseCode = 500;
+                //Set initial error values if an un expected problem occurs
+                String errorMsg = null;
+                byte[] bytesToSend = "<h1>Internal Error </h1><p>We are sorry. The server encountered an unexpected problem</p>".getBytes();
+                String mime = null;
+
+                String requestedFile = he.getRequestURI().toString();
+                String f = requestedFile.substring(requestedFile.lastIndexOf("/") + 1);
+                try {
+                    String extension = f.substring(f.lastIndexOf("."));
+                    mime = getMime(extension);
+                    File file = new File(publicFolder + f);
+                    System.out.println(publicFolder + f);
+                    bytesToSend = new byte[(int) file.length()];
+                    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+                    bis.read(bytesToSend, 0, bytesToSend.length);
+                    responseCode = 200;
+                } catch (Exception e) {
+                    responseCode = 404;
+                    errorMsg = "<h1>404 Not Found</h1>No context found for request";
+                }
+                if (responseCode == 200) {
+                    Headers h = he.getResponseHeaders();
+                    h.set("Content-Type", mime);
+                } else {
+                    bytesToSend = errorMsg.getBytes();
+                }
+                he.sendResponseHeaders(responseCode, bytesToSend.length);
+                try (OutputStream os = he.getResponseBody()) {
+                    os.write(bytesToSend, 0, bytesToSend.length);
+                }
             }
-            return mime;
+
+            private String getMime(String extension) {
+                String mime = "";
+                switch (extension) {
+                    case ".pdf":
+                        mime = "application/pdf";
+                        break;
+                    case ".png":
+                        mime = "image/png";
+                        break;
+                    case ".js":
+                        mime = "text/javascript";
+                        break;
+                    case ".html":
+                        mime = "text/html";
+                        break;
+                    case ".jar":
+                        mime = "application/java-archive";
+                        break;
+                }
+                return mime;
+            }
         }
     }
-}

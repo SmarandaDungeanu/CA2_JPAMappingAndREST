@@ -6,7 +6,6 @@
 package model;
 
 import com.google.gson.annotations.Expose;
-import java.io.Serializable;
 import javax.persistence.Entity;
 
 /**
@@ -14,7 +13,7 @@ import javax.persistence.Entity;
  * @author smarandadungeanu
  */
 @Entity
-public class Student extends RoleSchool implements Serializable {
+public class Student extends RoleSchool {
     private static final long serialVersionUID = 1L;
     @Expose
     private String semester;
@@ -29,6 +28,11 @@ public class Student extends RoleSchool implements Serializable {
 
     public void setSemester(String roleName, String semester) {
         this.semester = semester;
+    }
+
+    @Override
+    public String getRoleName() {
+        return super.getRoleName(); //To change body of generated methods, choose Tools | Templates.
     }
 
 

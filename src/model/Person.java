@@ -17,7 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.SequenceGenerator;
 
 /**
  *
@@ -31,7 +31,9 @@ public class Person implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="seq")
+   @SequenceGenerator(name="seq", sequenceName = "SEQGEN", initialValue = 100, allocationSize = 1)
+  //  @GeneratedValue(strategy = GenerationType.AUTO)
     @Expose
     private Long id;
     @Expose
