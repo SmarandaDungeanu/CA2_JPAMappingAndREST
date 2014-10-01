@@ -5,19 +5,16 @@ import com.google.gson.GsonBuilder;
 import exceptions.NotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import model.AssistantTeacher;
 import model.Person;
 import model.RoleSchool;
-import static org.eclipse.persistence.sessions.SessionProfiler.Transaction;
+import model.Student;
+import model.Teacher;
 
 public class PersonFacade implements IPersonFacade {
 
@@ -62,6 +59,18 @@ public class PersonFacade implements IPersonFacade {
     @Override
     public RoleSchool addRoleSchoolFromGson(String json, long id) {
         RoleSchool r = gson.fromJson(json, RoleSchool.class);
+        if(r.getRoleName().equals("Student"))
+        {
+        r = gson.fromJson(json, Student.class);
+        }
+        else if(r.getRoleName().equals("Teacher"))
+        {
+            r = gson.fromJson(json, Teacher.class);
+        }
+        else if(r.getRoleName().equals("AssistantTeacher"))
+        {
+            r = gson.fromJson(json, AssistantTeacher.class);
+        }
         for (Person p : persons) {
             if (p.getId() == id) {
                 r.setPerson(p);
