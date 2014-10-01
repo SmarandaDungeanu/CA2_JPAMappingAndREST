@@ -24,7 +24,7 @@ import model.Person;
 
 
 public class Rest {
-    static int port = 8080;
+    static int port = 8090;
     static String ip = "127.0.0.1";
     static String publicFolder = "src/htmlFiles/";
     static String startFile = "index.html";
@@ -34,6 +34,7 @@ public class Rest {
         HttpServer server = HttpServer.create(new InetSocketAddress(ip, port), 0);
         //REST Routes
         server.createContext("/Person", new HandlerPerson());
+    //    server.createContext("/Role", new HandlerRole());
         //HTTP Server Routes
         server.createContext(filesUri, new HandlerFileServer());
 
@@ -49,7 +50,7 @@ public class Rest {
         }
         new Rest().run();
     }
-
+   // class HandlerRole
     class HandlerPerson implements HttpHandler {
 
         PersonFacade facade = new PersonFacade();
@@ -68,6 +69,7 @@ public class Rest {
                             response = facade.getPersonAsJSON(id);
                         } else { //person
                             response = facade.getPersonsAsJSON();
+                            System.out.println(response);
                         }
                     } catch (NumberFormatException nfe) {
                         response = "Id is not a number.";

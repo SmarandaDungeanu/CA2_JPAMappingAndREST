@@ -3,9 +3,11 @@ package facades;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import exceptions.NotFoundException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.EntityManager;
@@ -21,8 +23,7 @@ public class PersonFacade implements IPersonFacade {
 
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("CA2_JPAMappingAndRESTPU");
     EntityManager em = emf.createEntityManager();
-    Map<Long, Person> persons = new HashMap();
-    private AtomicLong nextId;
+    List<Person> persons = new ArrayList();
     private Gson gson = new Gson();
     private Gson gson1 = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
@@ -30,7 +31,7 @@ public class PersonFacade implements IPersonFacade {
         Query query = em.createNamedQuery("Person.findAll");
         Collection<Person> ps = query.getResultList();
         for (Person p : ps) {
-            persons.put(p.getId(), p);
+            persons.add(p);
         }
     }
 
@@ -54,14 +55,18 @@ public class PersonFacade implements IPersonFacade {
         em.getTransaction().begin();
         em.persist(p);
         em.getTransaction().commit();
-        persons.put(p.getId(), p);
+        persons.add(p);
         return p;
     }
 
     @Override
     public RoleSchool addRoleSchoolFromGson(String json, long id) {
         RoleSchool r = gson.fromJson(json, RoleSchool.class);
-        r.setPerson(persons.get(id));
+        for (Person p : persons) {
+            if (p.getId() == id) {
+                r.setPerson(p);
+            }
+        }
         em.getTransaction().begin();
         em.persist(r);
         em.getTransaction().commit();
