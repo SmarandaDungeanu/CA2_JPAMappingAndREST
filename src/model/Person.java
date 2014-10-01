@@ -9,6 +9,7 @@ import com.google.gson.annotations.Expose;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -43,7 +44,7 @@ public class Person implements Serializable {
     private String email;
    
     @Expose
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person", cascade=CascadeType.ALL)
     List<RoleSchool> roles = new ArrayList();
 
     public Person() {
