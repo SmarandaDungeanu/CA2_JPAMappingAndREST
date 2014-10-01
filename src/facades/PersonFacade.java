@@ -69,8 +69,15 @@ public class PersonFacade implements IPersonFacade {
     }
 
     @Override
-    public Person delete(long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Person delete(long id) throws NotFoundException {
+        Person p = em.find(Person.class, id);
+        if (p == null) {
+            throw new NotFoundException("No person exists for the given id");
+        }
+        em.getTransaction().begin();
+        em.remove(p);
+        em.getTransaction().commit();
+        return p;
     }
 
 }

@@ -9,5 +9,5 @@ public interface IPersonFacade {
     public String getPersonAsJSON(long id) throws NotFoundException;
     public Person addPersonFromGson(String json);
     public RoleSchool addRoleSchoolFromGson(String json, long id);
-    public Person delete(long id);
+    public Person delete(long id) throws NotFoundException;
 }
