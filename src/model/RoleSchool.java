@@ -17,9 +17,9 @@ public class RoleSchool implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
-    @SequenceGenerator(name = "seq", sequenceName = "SEQGEN", initialValue = 100, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
+//    @SequenceGenerator(name = "seq", sequenceName = "SEQGEN", initialValue = 100, allocationSize = 1)
     private Long id;
     @Expose
     private String roleName;

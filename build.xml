@@ -10,6 +10,13 @@
 <project name="CA2_JPAMappingAndREST" default="default" basedir=".">
     <description>Builds, tests, and runs the project CA2_JPAMappingAndREST.</description>
     <import file="nbproject/build-impl.xml"/>
+    <target name="-post-compile">
+      <copy file="server.properties" todir="${dist.dir}"/> 
+      <copy file="startServer.bat" todir="${dist.dir}"/>
+      <copy file="public/index.html" todir="dist/public"/>
+      <copy file="public/script.js" todir="dist/public"/>
+      <copy file="public/style.css" todir="dist/public"/>
+    </target>
     <!--
 
     There exist several targets which are by default empty and which can be 
