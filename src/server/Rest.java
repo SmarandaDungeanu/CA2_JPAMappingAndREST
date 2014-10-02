@@ -207,7 +207,7 @@ public class Rest
                 String extension = f.substring(f.lastIndexOf("."));
                 mime = getMime(extension);
                 File file = new File(publicFolder + f);
-                System.out.println(publicFolder + f);
+//                System.out.println(publicFolder + f);
                 bytesToSend = new byte[(int) file.length()];
                 BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
                 bis.read(bytesToSend, 0, bytesToSend.length);
