@@ -2,6 +2,9 @@ package facades;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import exceptions.NotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,39 +19,45 @@ import model.RoleSchool;
 import model.Student;
 import model.Teacher;
 
-public class PersonFacade implements IPersonFacade {
+public class PersonFacade implements IPersonFacade
+{
 
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("CA2_JPAMappingAndRESTPU");
-    EntityManager em = emf.createEntityManager();
+    EntityManager em;
     List<Person> persons = new ArrayList();
     private Gson gson = new Gson();
     private Gson gson1 = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
-    public PersonFacade() {
+    public PersonFacade()
+    {
+    }
+
+    @Override
+    public String getPersonsAsJSON()
+    {
+        em = emf.createEntityManager();
         Query query = em.createNamedQuery("Person.findAll");
         Collection<Person> ps = query.getResultList();
-        for (Person p : ps) {
-            persons.add(p);
-        }
+        return gson1.toJson(ps);
     }
 
     @Override
-    public String getPersonsAsJSON() {
-        return gson1.toJson(persons);
-    }
-
-    @Override
-    public String getPersonAsJSON(long id) throws NotFoundException {
+    public String getPersonAsJSON(long id) throws NotFoundException
+    {
+        em = emf.createEntityManager();
         Person p = em.find(Person.class, id);
-        if (p == null) {
+        if (p == null)
+        {
             throw new NotFoundException("No person exists for the given id");
         }
         return gson1.toJson(p);
     }
 
     @Override
-    public Person addPersonFromGson(String json) {
+    public Person addPersonFromGson(String json)
+    {
         Person p = gson.fromJson(json, Person.class);
+        em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(p);
         em.getTransaction().commit();
@@ -57,35 +66,44 @@ public class PersonFacade implements IPersonFacade {
     }
 
     @Override
-    public RoleSchool addRoleSchoolFromGson(String json, long id) {
-        RoleSchool r = gson.fromJson(json, RoleSchool.class);
-        if(r.getRoleName().equals("Student"))
-        {
-        r = gson.fromJson(json, Student.class);
-        }
-        else if(r.getRoleName().equals("Teacher"))
-        {
-            r = gson.fromJson(json, Teacher.class);
-        }
-        else if(r.getRoleName().equals("AssistantTeacher"))
-        {
-            r = gson.fromJson(json, AssistantTeacher.class);
-        }
-        for (Person p : persons) {
-            if (p.getId() == id) {
-                r.setPerson(p);
-            }
-        }
+    public RoleSchool addRoleSchoolFromGson(String json, long id)
+    {
+        em = emf.createEntityManager();
         em.getTransaction().begin();
+        Person p = em.find(Person.class, id);
+        JsonElement je = new JsonParser().parse(json);
+        JsonObject jo = je.getAsJsonObject();
+        JsonElement role = jo.get("roleName");
+        String roleName = role.getAsString();
+        RoleSchool r;
+        switch (roleName)
+        {
+            case "Student":
+                r = gson.fromJson(json, Student.class);
+                break;
+            case "Teacher":
+                r = gson.fromJson(json, Teacher.class);
+                break;
+            case "AssistantTeacher":
+                r = gson.fromJson(json, AssistantTeacher.class);
+                break;
+            default:
+                r = gson.fromJson(json, RoleSchool.class);
+                break;
+        }
+        r.setPerson(p);
         em.persist(r);
         em.getTransaction().commit();
         return r;
     }
 
     @Override
-    public Person delete(long id) throws NotFoundException {
+    public Person delete(long id) throws NotFoundException
+    {
+        em = emf.createEntityManager();
         Person p = em.find(Person.class, id);
-        if (p == null) {
+        if (p == null)
+        {
             throw new NotFoundException("No person exists for the given id");
         }
         em.getTransaction().begin();

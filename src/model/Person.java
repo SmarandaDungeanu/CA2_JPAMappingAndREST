@@ -24,16 +24,19 @@ import javax.persistence.SequenceGenerator;
  * @author smarandadungeanu
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")
-})
-public class Person implements Serializable {
+@NamedQueries(
+        {
+            @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")
+        })
+
+public class Person implements Serializable
+{
 
     private static final long serialVersionUID = 1L;
     @Id
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="seq")
-   @SequenceGenerator(name="seq", sequenceName = "SEQGEN", initialValue = 100, allocationSize = 1)
-  //  @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+//   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="seq")
+//   @SequenceGenerator(name="seq", sequenceName = "SEQGEN", initialValue = 100, allocationSize = 1)
     @Expose
     private Long id;
     @Expose
@@ -44,22 +47,25 @@ public class Person implements Serializable {
     private String phone;
     @Expose
     private String email;
-   
+
     @Expose
-    @OneToMany(mappedBy = "person", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     List<RoleSchool> roles = new ArrayList();
 
-    public Person() {
+    public Person()
+    {
     }
 
-    public Person(String firstName, String lastName, String phone, String email) {
+    public Person(String firstName, String lastName, String phone, String email)
+    {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
         this.email = email;
     }
 
-    public void addRole(RoleSchool role) {
+    public void addRole(RoleSchool role)
+    {
         roles.add(role);
     }
 
@@ -67,68 +73,83 @@ public class Person implements Serializable {
 //    {
 //        roles.remove(role);
 //    }
-    public Long getId() {
+    public Long getId()
+    {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Long id)
+    {
         this.id = id;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(String lastName)
+    {
         this.lastName = lastName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(String firstName)
+    {
         this.firstName = firstName;
     }
 
-    public String getLastName() {
+    public String getLastName()
+    {
         return lastName;
     }
 
-    public String getFirstName() {
+    public String getFirstName()
+    {
         return firstName;
     }
 
-    public void setPhone(String phone) {
+    public void setPhone(String phone)
+    {
         this.phone = phone;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(String email)
+    {
         this.email = email;
     }
 
-    public String getPhone() {
+    public String getPhone()
+    {
         return phone;
     }
 
-    public String getEmail() {
+    public String getEmail()
+    {
         return email;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(Object object)
+    {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Person)) {
+        if (!(object instanceof Person))
+        {
             return false;
         }
         Person other = (Person) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)))
+        {
             return false;
         }
         return true;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "model.Person[ id=" + id + " ]";
     }
 
