@@ -2,13 +2,8 @@ package facades;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import exceptions.NotFoundException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -22,9 +17,8 @@ import model.Teacher;
 public class PersonFacade implements IPersonFacade
 {
 
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("CA2_JPAMappingAndRESTPU");
-    EntityManager em;
-    List<Person> persons = new ArrayList();
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("CA2_JPAMappingAndRESTPU");
+    private EntityManager em;
     private Gson gson = new Gson();
     private Gson gson1 = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
@@ -61,8 +55,26 @@ public class PersonFacade implements IPersonFacade
         em.getTransaction().begin();
         em.persist(p);
         em.getTransaction().commit();
-        persons.add(p);
         return p;
+    }
+
+    @Override
+    public Person editPersonFromGson(String json) throws NotFoundException
+    {
+        em = emf.createEntityManager();
+        Person updatedPerson = gson.fromJson(json, Person.class);
+        em.getTransaction().begin();
+        Person existingPerson = em.find(Person.class, updatedPerson.getId());
+        if (existingPerson == null)
+        {
+            throw new NotFoundException("No person exists for the given id");
+        }
+        existingPerson.setFirstName(updatedPerson.getFirstName());
+        existingPerson.setLastName(updatedPerson.getLastName());
+        existingPerson.setPhone(updatedPerson.getPhone());
+        existingPerson.setEmail(updatedPerson.getEmail());
+        em.getTransaction().commit();
+        return existingPerson;
     }
 
     @Override
@@ -71,12 +83,9 @@ public class PersonFacade implements IPersonFacade
         em = emf.createEntityManager();
         em.getTransaction().begin();
         Person p = em.find(Person.class, id);
-        JsonElement je = new JsonParser().parse(json);
-        JsonObject jo = je.getAsJsonObject();
-        JsonElement role = jo.get("roleName");
-        String roleName = role.getAsString();
+
         RoleSchool r;
-        switch (roleName)
+        switch (gson.fromJson(json, RoleSchool.class).getRoleName())
         {
             case "Student":
                 r = gson.fromJson(json, Student.class);
@@ -95,6 +104,21 @@ public class PersonFacade implements IPersonFacade
         em.persist(r);
         em.getTransaction().commit();
         return r;
+    }
+
+    public RoleSchool removeRoleSchoolFromGson(String json, long id)
+    {
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        RoleSchool rsFromDB = em.find(RoleSchool.class, gson.fromJson(json, RoleSchool.class).getId());
+        em.remove(rsFromDB);
+
+        Person p = em.find(Person.class, id);
+        p.removeRole(rsFromDB);
+        em.persist(p);
+        em.getTransaction().commit();
+        return rsFromDB;
     }
 
     @Override

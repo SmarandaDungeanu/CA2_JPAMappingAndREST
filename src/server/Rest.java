@@ -84,15 +84,30 @@ public class Rest
                 InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
                 BufferedReader br = new BufferedReader(isr);
                 String jsonQuery = br.readLine();
-                RoleSchool r = facade.addRoleSchoolFromGson(jsonQuery, id);
-                //   System.out.println(facade.addRoleSchoolFromGson(jsonQuery, id));
-                //   System.out.println(new Gson().toJson(r));
-                response = "added";
-                //   System.out.println(response);
+
+                String method = he.getRequestMethod().toUpperCase();
+                System.out.println(jsonQuery);
+                switch (method)
+                {
+                    case "POST":
+                    {
+                        facade.addRoleSchoolFromGson(jsonQuery, id);
+                        response = "added";
+                        break;
+                    }
+                    case "DELETE":
+                    {
+                        facade.removeRoleSchoolFromGson(jsonQuery, id);
+                        response = "deleted";
+                        break;
+                    }
+                    default:
+                        break;
+                }
             }
             else
             {
-                response = "Provide a person id";
+                response = "Provide a valid person id";
             }
             he.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             he.getResponseHeaders().add("Content-Type", "application/json");
@@ -142,14 +157,30 @@ public class Rest
                     }
                     break;
                 case "POST":
+                {
                     InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
                     BufferedReader br = new BufferedReader(isr);
                     String jsonQuery = br.readLine();
                     Person p = facade.addPersonFromGson(jsonQuery);
                     response = new Gson().toJson(p);
                     break;
+                }
                 case "PUT":
+                {
+                    try
+                    {
+                        InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
+                        BufferedReader br = new BufferedReader(isr);
+                        String jsonQuery = br.readLine();
+                        Person p = facade.editPersonFromGson(jsonQuery);
+                        response = new Gson().toJson(p);
+                    } catch (NotFoundException ex)
+                    {
+                        response = "No person found for this id.";
+                        status = 404;
+                    }
                     break;
+                }
                 case "DELETE":
                     try
                     {
