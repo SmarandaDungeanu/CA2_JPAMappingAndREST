@@ -11,20 +11,29 @@
     </head>
     <body>
         <div id="outer">
+            <div id="other_info">
+                <a href="https://github.com/SmarandaDungeanu/CA1" target="_blank">>> Github project link <<</a>
+                <br><br>
+                <a href="documentation.pdf" target="_blank">>> Documentation <<</a>
+            </div>
+            
             <div id="header">CA2 - JPA Mapping and REST</div>
+            
             <div id="details">
-                <div><label>id</label><input id="id" disabled="disabled" type="text" size="26"/></div>
+                <div><label>ID</label><input id="id" disabled="disabled" type="text" size="26"/></div>
                 <div><label>First Name</label><input id="fname" disabled="disabled" type="text" size="26"/></div>
                 <div><label>Last Name</label><input id="lname" disabled="disabled" type="text" size="26"/></div>
                 <div><label>Email</label><input id="email" disabled="disabled" type="text" size="26"/></div>
                 <div><label>Phone</label><input id="phone" disabled="disabled" type="text" size="26"/></div>
             </div>
+            
             <div>
                 <button id="btn_add">Add Person</button>
                 <button id="btn_save" disabled="disabled">Save Person</button>
                 <button id="btn_cancel" disabled="disabled">Cancel</button>
                 <button id="btn_delete" disabled="disabled">Delete</button>
             </div>
+            
             <br>
             <select id="persons" size="2" style="min-width: 315px;height: 250px;">
             </select>

@@ -17,6 +17,7 @@
       <copy file="public/index.html" todir="dist/public"/>
       <copy file="public/script.js" todir="dist/public"/>
       <copy file="public/style.css" todir="dist/public"/>
+      <copy file="public/documentation.pdf" todir="dist/public"/>
     </target>
     <!--
 
