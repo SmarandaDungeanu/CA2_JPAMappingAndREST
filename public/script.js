@@ -2,6 +2,7 @@ $(document).ready(function () {
     fetchAll();
     deletePerson();
     initPersons();
+    initPersons2();
     initAddBtn();
     initCancelBtn();
     initSaveBtn();
@@ -49,6 +50,22 @@ function initPersons() {
             return;
         }
         updateDetails(id);
+    });
+}
+
+function initPersons2() {
+    $("#persons").keyup(function (e) {
+        if (e.keyCode === 13) {
+            alert('you pressed enter ^_^');
+        }
+        if (e.keyCode === 38 || e.keyCode === 40)
+        {
+            var id = e.target.options.item(e.target.options.selectedIndex).id;
+            if (isNaN(id)) {
+                return;
+            }
+            updateDetails(id);
+        }
     });
 }
 

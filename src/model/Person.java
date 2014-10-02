@@ -69,10 +69,11 @@ public class Person implements Serializable
         roles.add(role);
     }
 
-//    public void removeRole(RoleSchool role)
-//    {
-//        roles.remove(role);
-//    }
+    public void removeRole(RoleSchool role)
+    {
+        roles.remove(role);
+    }
+    
     public Long getId()
     {
         return id;
