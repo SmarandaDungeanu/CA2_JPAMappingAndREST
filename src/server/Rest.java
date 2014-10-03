@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -173,7 +174,8 @@ public class Rest
                         BufferedReader br = new BufferedReader(isr);
                         String jsonQuery = br.readLine();
                         Person p = facade.editPersonFromGson(jsonQuery);
-                        response = new Gson().toJson(p);
+                        Gson gson1 = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+                        response = gson1.toJson(p);
                     } catch (NotFoundException ex)
                     {
                         response = "No person found for this id.";
@@ -190,7 +192,8 @@ public class Rest
                         {  //person/id
                             int id = Integer.parseInt(path.substring(lastIndex + 1));
                             Person p1 = facade.delete(id);
-                            response = new Gson().toJson(p1);
+                            Gson gson1 = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+                            response = gson1.toJson(p1);
                         }
                         else
                         {
