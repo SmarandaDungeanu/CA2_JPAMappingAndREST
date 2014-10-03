@@ -79,6 +79,11 @@ public class Person implements Serializable
         return id;
     }
 
+    public void setRoles(List<RoleSchool> roles)
+    {
+        this.roles = roles;
+    }
+
     public void setId(Long id)
     {
         this.id = id;
@@ -119,6 +124,11 @@ public class Person implements Serializable
         return phone;
     }
 
+    public List<RoleSchool> getRoles()
+    {
+        return roles;
+    }
+
     public String getEmail()
     {
         return email;
@@ -151,7 +161,7 @@ public class Person implements Serializable
     @Override
     public String toString()
     {
-        return "model.Person[ id=" + id + " ]";
+        return "Person{" + "id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", phone=" + phone + ", email=" + email + ", roles=" + roles + '}';
     }
-
+    
 }
