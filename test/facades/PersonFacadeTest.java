@@ -24,16 +24,16 @@ import static org.junit.Assert.*;
  *
  * @author Marek FURAK
  */
-public class PersonFacadeIntegrationTest
+public class PersonFacadeTest
 {
 
-    PersonFacade facade;
+    PersonFacadeMock facade;
     Gson gson = new Gson();
 
     @Before
     public void setUp()
     {
-        facade = new PersonFacade();
+        facade = new PersonFacadeMock();
     }
 
     /**
@@ -113,8 +113,9 @@ public class PersonFacadeIntegrationTest
         String role = gson.toJson(rs);
 
         persons.add(p1);
-        p1.addRole(rs);
+
         rs = facade.addRoleSchoolFromGson(role, p1.getId());
+        p1.addRole(rs);
 
         String expected = gson.toJson(persons);
         String actual = facade.getPersonsAsJSON();
@@ -216,6 +217,7 @@ public class PersonFacadeIntegrationTest
         facade.editPersonFromGson(expected);
 
 //        String actual = facade.getPersonAsJSON(p1.getId());
+//
 //        assertEquals(expected, actual);
     }
 
@@ -228,13 +230,14 @@ public class PersonFacadeIntegrationTest
         p1 = facade.addPersonFromGson(personAsJson1);
 
         RoleSchool rs = new Student("Test");
-        String role = gson.toJson(rs); 
+        String role = gson.toJson(rs);
         rs = facade.addRoleSchoolFromGson(role, p1.getId());
         role = gson.toJson(rs);
         p1.setId(5000l);
         facade.removeRoleSchoolFromGson(role, p1.getId());
-
+//
 //        String expected = gson.toJson(p1);
+//
 //        String actual = facade.getPersonAsJSON(p1.getId());
 //        assertEquals(expected, actual);
     }

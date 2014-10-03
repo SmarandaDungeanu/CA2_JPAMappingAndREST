@@ -106,6 +106,7 @@ public class PersonFacade implements IPersonFacade
         return r;
     }
 
+    @Override
     public RoleSchool removeRoleSchoolFromGson(String json, long id)
     {
         em = emf.createEntityManager();
